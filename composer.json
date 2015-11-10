@@ -1,0 +1,14 @@
+{
+    "name": "lmerotta/docx",
+    "description": "PHP Based Docx Parser, based on original work by PhilGale92/docx",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lucio Merotta",
+            "email": "l.merotta@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
