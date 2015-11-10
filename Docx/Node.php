@@ -1,5 +1,7 @@
-<?php 
+<?php
 	namespace Docx;
+
+    include_once '../functions.php';
 		/**
 		 * @name Node
 		 * @desc Each Docx render is made up of a list of nodes
