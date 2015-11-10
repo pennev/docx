@@ -2,8 +2,6 @@
 	namespace Docx;
 
 	include_once  __DIR__.'/../functions.php';
-
-	die(var_dump( __DIR__.'/../functions.php'));
 		class Style {
 			/**
 			 * @name wordStyle
