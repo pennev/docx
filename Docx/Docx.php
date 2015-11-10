@@ -1,7 +1,7 @@
 <?php 
 	namespace Docx;
 
-	include_once '../functions.php';
+	include_once __DIR__.'/../functions.php';
 		class Docx {
 			public $fileName = '';
 			public $wordUri = '';
