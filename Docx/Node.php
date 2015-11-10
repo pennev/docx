@@ -1,5 +1,5 @@
 <?php 
-	namespace Docx {
+	namespace Docx;
 		/**
 		 * @name Node
 		 * @desc Each Docx render is made up of a list of nodes
@@ -524,4 +524,3 @@
 				}
 			}
 		}
-	}

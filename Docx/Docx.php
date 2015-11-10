@@ -1,5 +1,5 @@
 <?php 
-	namespace Docx {
+	namespace Docx;
 		class Docx {
 			public $fileName = '';
 			public $wordUri = '';
@@ -365,4 +365,3 @@
 			
 			
 		}
-	}

@@ -1,5 +1,5 @@
 <?php
-	namespace Docx {
+	namespace Docx;
 		class Style {
 			/**
 			 * @name wordStyle
@@ -50,4 +50,3 @@
 				if (isset($docx->styles[$wordStyleName])) return $docx->styles[$wordStyleName]; else return null;
 			}
 		}
-	}
