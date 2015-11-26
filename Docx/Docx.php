@@ -160,15 +160,12 @@
 					if ($node->listLevel > 0) $node->type = 'listitem';
 
 					$liClassStr = '';
-					$style = '';
 
 					if ($node->wordStyle != ''){
 						$styleData = Style::getStyleObject($node->wordStyle, $this);
 						if (is_object($styleData)){
 							if ($styleData->htmlClass != '')
 								$liClassStr = ' class="' . $styleData->htmlClass . '"';
-						}else{
-							$style = ' wordstyle="docxlist_'.$node->wordStyle.'"';
 						}
 					}
 					if ($currentListLevel > $node->listLevel){
@@ -180,10 +177,10 @@
 					}
 					if ($currentListLevel < $node->listLevel){
 						for ($loopI = $currentListLevel; $loopI < $node->listLevel; $loopI++){
-							$node->prepend .= '<ul><li' . $liClassStr .$style. '>';
+							$node->prepend .= '<ul><li' . $liClassStr . '>';
 						}
 					} else {
-						if ($currentListLevel > 0 && $currentListLevel == $node->listLevel) $node->prepend .= '<li' . $liClassStr .$style. '>';
+						if ($currentListLevel > 0 && $currentListLevel == $node->listLevel) $node->prepend .= '<li' . $liClassStr . '>';
 					}
 
 					$currentListLevel = $node->listLevel;
@@ -211,11 +208,11 @@
 						case 'w:p':
 						case 'listitem':
 							if ($node->type == 'listitem') $html .= $node->prepend;
-							
+
 							$elementPrepend = '';
 							$elementAppend = '';
 							$idAttr = '';
-							
+
 							if ($node->type == 'w:p'){
 								# List styles are delt with within the ->parseLists method, here we only want to deal with w:p
 								if ($node->wordStyle == ''){
@@ -229,17 +226,17 @@
 											$rawStr = '';
 											foreach ($node->run as $runArr)
 												$rawStr .= $runArr['text'];
-											
+
 											# Constuct an htmlId, then use the styleData to decide what to do with it
 											$htmlId = Node::buildHtmlId($rawStr, $styleData);
 											$idAttr = ' id="' . $htmlId . '"';
-											
+
 										}
-																											
+
 										$classStr = '';
 										if ($styleData->htmlClass != '')
 											$classStr = ' class="' . $styleData->htmlClass . '"';
-								
+
 										$elementPrepend .= '<' . $styleData->htmlTag . $classStr . $idAttr .  '>';
 										$elementAppend .= '</' . $styleData->htmlTag . '>';
 									}
@@ -251,59 +248,89 @@
 										$elementAppend .= '</unsupported-style>';
 									}
 								}
+							}else{
+								// listitem
+								$styleData = Style::getStyleObject($node->wordStyle, $this);
+								if (is_object($styleData)){
+									if ($styleData->addHtmlId){
+										# Compile the text from the runarr without the prepend / appending
+										$rawStr = '';
+										foreach ($node->run as $runArr)
+											$rawStr .= $runArr['text'];
+
+										# Constuct an htmlId, then use the styleData to decide what to do with it
+										$htmlId = Node::buildHtmlId($rawStr, $styleData);
+										$idAttr = ' id="' . $htmlId . '"';
+
+									}
+
+									$classStr = '';
+									if ($styleData->htmlClass != '')
+										$classStr = ' class="' . $styleData->htmlClass . '"';
+
+									$elementPrepend .= '<' . $styleData->htmlTag . $classStr . $idAttr .  '>';
+									$elementAppend .= '</' . $styleData->htmlTag . '>';
+								}
+								else{
+
+									$classStr = ' wordstyle="docxlist_' . $node->wordStyle . '"';
+
+									$elementPrepend .= '<unsupported-style '. $classStr .'>';
+									$elementAppend .= '</unsupported-style>';
+								}
 							}
-							
+
 							$html .= $elementPrepend;
-							
+
 							# Apply the w:indent
 							if ($node->indent != null)
 								$html .= '<span class="indent ind_' . $node->indent . '">&nbsp;</span>';
-							
-							
+
+
 							foreach ($node->run as $ii => $runArr){
 								$runPrepend = '';
 								$runAppend = '';
-																
+
 								if ($runArr['bold']){ $runPrepend = '<b>' . $runPrepend; $runAppend .= '</b>';}
 								if ($runArr['underline']){ $runPrepend = '<u>' . $runPrepend; $runAppend .= '</u>';}
 								if ($runArr['italic']){ $runPrepend = '<i>' . $runPrepend; $runAppend .= '</i>';}
 								if ($runArr['tab'] == true) $runArr['text'] = '<span class="tab"></span>' . $runArr['text'];
-								
+
 								$html .= $runPrepend . $runArr['text'] . $runAppend;
 							}
-							
+
 							$html .= $elementAppend;
 							if ($node->type == 'listitem') $html .= $node->append;
-							
+
 							# Now the HTML has been pasrsed run the Pass under style segment
 							if (isset($styleData->passUnderNextStyle)){
 								if ($styleData->passUnderNextStyle != ''){
 									if (!isset($this->_passUnderStorage[$styleData->passUnderNextStyle]))
 										$this->_passUnderStorage[$styleData->passUnderNextStyle] = array();
-										
+
 									if (!isset($this->_passUnderStorage[$styleData->passUnderNextStyle][$this->_currentPassUnderKey]))
 										$this->_passUnderStorage[$styleData->passUnderNextStyle][$this->_currentPassUnderKey] = array();
-									
+
 									$this->_passUnderStorage[$styleData->passUnderNextStyle][$this->_currentPassUnderKey][] = static::prepStorage($node, $styleData, $html);
 								}
 							}
 
-							
-						break;
+
+							break;
 						case 'w:drawing':
 							$imageInfo = explode(".", $node->img['name']);
 							$html .=  '<img width="' . $node->img['w'] . '" height="' . $node->img['h'] . '" title="' . $imageInfo[0] . '" src="data:image/' . $imageInfo[1] . ';base64,' . $node->img['data'] . '" alt="" />';
-						break;
+							break;
 						case 'w:tbl':
 							$html .= $node->html;
-						break;
+							break;
 						case 'w:txbxContent':
-							
-						break;
+
+							break;
 					}
 					$node->htmlProcess = $html;
 				}
-				
+
 				$this->_parseTable();
 				return $this;
 			}
