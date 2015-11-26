@@ -242,7 +242,7 @@
 									}
 									else{
 
-										$classStr = ' class="' . $node->wordStyle . '"';
+										$classStr = ' wordstyle="' . $node->wordStyle . '"';
 
 										$elementPrepend .= '<unsupported-style '. $classStr .'>';
 										$elementAppend .= '</unsupported-style>';
