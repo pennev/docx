@@ -240,6 +240,13 @@
 										$elementPrepend .= '<' . $styleData->htmlTag . $classStr . $idAttr .  '>';
 										$elementAppend .= '</' . $styleData->htmlTag . '>';
 									}
+									else{
+
+										$classStr = ' class="' . $node->wordStyle . '"';
+
+										$elementPrepend .= '<unsupported-style '. $classStr .'>';
+										$elementAppend .= '</unsupported-style>';
+									}
 								}
 							}
 							
