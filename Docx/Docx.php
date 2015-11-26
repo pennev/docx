@@ -35,7 +35,12 @@
 			public function attachStyles(){
 				$args = func_get_args();
 				foreach ($args as $arg){
-					$this->styles[$arg->wordStyle] = $arg;
+					if(empty($this->styles[$arg->wordStyle]))
+						$this->styles[$arg->wordStyle] = $arg;
+					else {
+						if(!empty($arg->htmlClass))
+							$this->styles[$arg->wordStyle]->htmlClass .= ' '.$arg->htmlClass;
+					}
 				}
 				return $this;
 			}
