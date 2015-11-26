@@ -158,14 +158,17 @@
 				foreach ($this->nodes as $i => $node){
 					# Get the style so we can apply it to the li tag
 					if ($node->listLevel > 0) $node->type = 'listitem';
-					
+
 					$liClassStr = '';
-					
+					$style = '';
+
 					if ($node->wordStyle != ''){
 						$styleData = Style::getStyleObject($node->wordStyle, $this);
 						if (is_object($styleData)){
 							if ($styleData->htmlClass != '')
 								$liClassStr = ' class="' . $styleData->htmlClass . '"';
+						}else{
+							$style = ' wordstyle="docxlist_'.$node->wordStyle.'"';
 						}
 					}
 					if ($currentListLevel > $node->listLevel){
@@ -177,10 +180,10 @@
 					}
 					if ($currentListLevel < $node->listLevel){
 						for ($loopI = $currentListLevel; $loopI < $node->listLevel; $loopI++){
-							$node->prepend .= '<ul><li' . $liClassStr . '>';
+							$node->prepend .= '<ul><li' . $liClassStr .$style. '>';
 						}
 					} else {
-						if ($currentListLevel > 0 && $currentListLevel == $node->listLevel) $node->prepend .= '<li' . $liClassStr . '>';
+						if ($currentListLevel > 0 && $currentListLevel == $node->listLevel) $node->prepend .= '<li' . $liClassStr .$style. '>';
 					}
 
 					$currentListLevel = $node->listLevel;
