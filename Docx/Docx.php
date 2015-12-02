@@ -271,7 +271,7 @@
 									$elementPrepend .= '<' . $styleData->htmlTag . $classStr . $idAttr .  '>';
 									$elementAppend .= '</' . $styleData->htmlTag . '>';
 								}
-								else{
+								else if(!empty($node->wordStyle)) {
 
 									$classStr = ' wordstyle="docxlist_' . $node->wordStyle . '"';
 
