@@ -1,4 +1,4 @@
-<?php 
+<?php
 	namespace Docx;
 
 	include_once __DIR__.'/../functions.php';
@@ -9,24 +9,24 @@
 			public $xPath = null;
 			public $images = array();
 			public static $storageLinkClass = 'storage_link';
-			
+
 			public $nodes = array();
 			public $styles = array();
-			
+
 			private $_allowEmfImages = false;
 			private $_htmlArr = array();
-			
+
 			protected $_passUnderStorage = array();
 			protected $_currentPassUnderKey = null;
-			
+
 			public function __construct($fileUri, $fileName, $disableExternalEntities = true){
 				libxml_disable_entity_loader($disableExternalEntities ) ;
-				
+
 				$this->fileName = $fileName;
 				$this->wordUri = $fileUri;
 				Node::$counter = -1;
 			}
-			
+
 			/**
 			 * @name attachStyles
 			 * @desc This function takes an unlimited number of args of Docx\Style instances
@@ -44,29 +44,29 @@
 				}
 				return $this;
 			}
-			
+
 			/**
 			 * @desc This method gets the required XML snippets from the file, and extracts the image assets
 			 * @return $this, modifies $this->xml, $this->assets
 			 */
 			public function import(){
 				$imageAssets = array();
-				
+
 				$zip = zip_open($this->wordUri);
 				while ($zipEntry = zip_read($zip)){
 					$entryName = zip_entry_name($zipEntry);
 					if (zip_entry_open($zip, $zipEntry) == FALSE) continue;
-					
+
 					# /media/ contains all assets
 					if (strpos($entryName, 'word/media') !== false){
 						# Removes 'word/media' prefix
 						$imageName = substr($entryName, 11);
-						
+
 						# Prevent EMF file extensions passing, as they are used by word rather than being manually placed
 						if (!$this->_allowEmfImages){
 							if (substr($imageName, -3) == 'emf') continue;
 						}
-						
+
 						# Place the image assets into an array for future reference
 						$imageAssets[$imageName] = array(
 							'h' => 'auto',
@@ -75,19 +75,19 @@
 							'id' => null,
 							'data' => base64_encode(zip_entry_read($zipEntry, zip_entry_filesize($zipEntry))));
 					}
-					
+
 					# Get the image relationship xml structure
 					if ($entryName == 'word/_rels/document.xml.rels')
 						$this->xml['image'] = zip_entry_read($zipEntry, zip_entry_filesize($zipEntry));
-					
+
 					# Get the document structure
 					if ($entryName == 'word/document.xml')
 						$this->xml['structure'] = zip_entry_read($zipEntry, zip_entry_filesize($zipEntry));
-					
+
 					zip_entry_close($zipEntry);
 				}
 				zip_close($zip);
-				
+
 				# Apply relId's to the image array, so they can be attached to the structure
 				if (isset($this->xml['image'])){
 					$dom = new \DOMDocument();
@@ -111,7 +111,7 @@
 				}
 				return $this;
 			}
-			
+
 			/**
 			 * @name getNodes
 			 * @desc Convert the XML string into a nodeArray ($this->nodes)
@@ -122,7 +122,7 @@
 				$dom->loadXML($this->xml['structure'], LIBXML_NOENT | LIBXML_XINCLUDE | LIBXML_NOERROR | LIBXML_NOWARNING);
 				$dom->encoding = 'utf-8';
 				$elements = $dom->getElementsByTagName('*');
-				
+
 				# Set up xPath for improved dom navigating
 				$xPath = new \DOMXPath($dom);
 				$xPath->registerNamespace('mc', "http://schemas.openxmlformats.org/markup-compatibility/2006");
@@ -132,7 +132,7 @@
 				$xPath->registerNamespace('pic', "http://schemas.openxmlformats.org/drawingml/2006/picture");
 				$xPath->registerNamespace('v', "urn:schemas-microsoft-com:vml");
 				$this->xPath = $xPath;
-				
+
 				foreach ($elements as $node) {
 					# Use a switch here to decide what nodes to actually parse
 					switch ($node->nodeName){
@@ -144,10 +144,10 @@
 						break;
 					}
 				}
-				
+
 				return $this;
 			}
-			
+
 			/**
 			 * @name parseNodes
 			 * @desc Prepare the array (prepare lists, as they can affect their sibiling nodes) by modifying $node->prepend & $node->append with the ul / li tags)
@@ -187,7 +187,7 @@
 				}
 				return $this;
 			}
-			
+
 			public static function prepStorage($node, $styleData, $str){
 				if ($node->type != 'listitem'){
 					$str = strip_tags($str);
@@ -196,7 +196,7 @@
 					return $str;
 				} else return '';
 			}
-			
+
 			/**
 			 * @name parseNodes
 			 * @desc Converts the prepared lists of nodes into an html array
@@ -232,10 +232,15 @@
 											$idAttr = ' id="' . $htmlId . '"';
 
 										}
-
 										$classStr = '';
+
 										if ($styleData->htmlClass != '')
 											$classStr = ' class="' . $styleData->htmlClass . '"';
+
+										if(empty($styleData->htmlTag)) {
+											$styleData->htmlTag = 'p';
+											$classStr = '';
+										}
 
 										$elementPrepend .= '<' . $styleData->htmlTag . $classStr . $idAttr .  '>';
 										$elementAppend .= '</' . $styleData->htmlTag . '>';
@@ -247,36 +252,6 @@
 										$elementPrepend .= '<unsupported-style '. $classStr .'>';
 										$elementAppend .= '</unsupported-style>';
 									}
-								}
-							}else{
-								// listitem
-								$styleData = Style::getStyleObject($node->wordStyle, $this);
-								if (is_object($styleData)){
-									if ($styleData->addHtmlId){
-										# Compile the text from the runarr without the prepend / appending
-										$rawStr = '';
-										foreach ($node->run as $runArr)
-											$rawStr .= $runArr['text'];
-
-										# Constuct an htmlId, then use the styleData to decide what to do with it
-										$htmlId = Node::buildHtmlId($rawStr, $styleData);
-										$idAttr = ' id="' . $htmlId . '"';
-
-									}
-
-									$classStr = '';
-									if ($styleData->htmlClass != '')
-										$classStr = ' class="' . $styleData->htmlClass . '"';
-
-									$elementPrepend .= '<' . $styleData->htmlTag . $classStr . $idAttr .  '>';
-									$elementAppend .= '</' . $styleData->htmlTag . '>';
-								}
-								else if(!empty($node->wordStyle)) {
-
-									$classStr = ' wordstyle="docxlist_' . $node->wordStyle . '"';
-
-									$elementPrepend .= '<unsupported-style '. $classStr .'>';
-									$elementAppend .= '</unsupported-style>';
 								}
 							}
 
@@ -334,7 +309,7 @@
 				$this->_parseTable();
 				return $this;
 			}
-			
+
 			/**
 			 * @name _parseTable
 			 * @desc Replace tokenized cells with contents
@@ -352,7 +327,7 @@
 					}
 				}
 			}
-			
+
 			/**
 			 * @name twipToPt
 			 * @desc Converts the most stupid measurement into one understood by everyone
@@ -362,7 +337,7 @@
 			public static function twipToPt($twip){
 				return round($twip / 20);
 			}
-			
+
 			/**
 			 * @name attachNode
 			 * @param Docx\Node $nodeObj
@@ -372,7 +347,7 @@
 				unset($nodeObj->docx);
 				$this->nodes[] = $nodeObj;
 			}
-			
+
 			/**
 			 * @name render
 			 * @desc Turns the html array into a string ready to output
@@ -384,7 +359,7 @@
 					# Render Stored elements (if any)
 					$styleData = Style::getStyleObject($node->wordStyle, $this);
 					if (is_object($styleData)){
-						
+
 						if (isset($this->_passUnderStorage[$styleData->htmlClass])){
 							if (isset($this->_passUnderStorage[$styleData->htmlClass][$this->_currentPassUnderKey])){
 								$res = $this->_passUnderStorage[$styleData->htmlClass][$this->_currentPassUnderKey];
@@ -392,20 +367,20 @@
 									$storedHtml .= $subhtml;
 								}
 								unset($this->_passUnderStorage[$styleData->htmlClass][$this->_currentPassUnderKey]);
-							}	
+							}
 						}
 					}
-					
-					
-					# Case to remove empty <li>'s 
+
+
+					# Case to remove empty <li>'s
 					$node->htmlProcess = str_replace(array("<li></li>", "<p></p>"), "", $node->htmlProcess);
-					
+
 					$html .= $node->htmlProcess;
-					
+
 					$html .= $storedHtml;
 				}
 				$this->html = $html;
 			}
-			
-			
+
+
 		}
