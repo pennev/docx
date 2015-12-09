@@ -8,6 +8,7 @@ class Docx {
 	public $xml = array();
 	public $xPath = null;
 	public $images = array();
+	public $relations = array();
 	public static $storageLinkClass = 'storage_link';
 
 	public $nodes = array();
@@ -109,6 +110,23 @@ class Docx {
 			}
 			$this->images = $imageAssets;
 		}
+
+		// Same for relations
+		if (isset($this->xml['image'])){
+			$dom = new \DOMDocument();
+			$dom->loadXML($this->xml['image'], LIBXML_NOENT | LIBXML_XINCLUDE | LIBXML_NOERROR | LIBXML_NOWARNING);
+			$dom->encoding = 'utf-8';
+			$elements = $dom->getElementsByTagName('Relationships')->item(0)->childNodes;
+			foreach ($elements as $node) {
+				if ($node->nodeName == 'Relationship'){
+					$relationshipAttributes = $node->attributes;
+					$relationId = $relationshipAttributes->item(0)->value;
+					$assets[$relationId] = $relationshipAttributes;
+				}
+			}
+			$this->relations = $assets;
+		}
+
 		return $this;
 	}
 
@@ -144,7 +162,6 @@ class Docx {
 					break;
 			}
 		}
-
 		return $this;
 	}
 
@@ -260,6 +277,7 @@ class Docx {
 
 
 					foreach ($node->run as $ii => $runArr){
+
 						$runPrepend = '';
 						$runAppend = '';
 
