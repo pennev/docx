@@ -160,13 +160,12 @@ class Node {
 
 		if ($text != '' && $wr->tagName != 'w:hyperlink') $text = htmlEntitiesEncode($text);
 
-		$brQuery = $this->xPath->query("w:br", $wr);
-
-		if($brQuery->length > 0) {
-			foreach($brQuery as $br)
-			{
-				$text .= "<br>";
-			}
+		if($wr->tagName == 'w:br') {
+			$text = '<br>';
+			$underline = false;
+			$tab = false;
+			$italic  = false;
+			$bold = false;
 		}
 
 		$parsedWR = array(
@@ -215,7 +214,7 @@ class Node {
 				}
 
 				# Join the different runs together
-				$textRun = $this->xPath->query("w:r|w:hyperlink", $this->dom);
+				$textRun = $this->xPath->query("w:r|w:hyperlink|w:br", $this->dom);
 				$text = '';
 
 				foreach ($textRun as $run){
