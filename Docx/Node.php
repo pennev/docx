@@ -160,6 +160,15 @@ class Node {
 
 		if ($text != '' && $wr->tagName != 'w:hyperlink') $text = htmlEntitiesEncode($text);
 
+		$brQuery = $this->xPath->query("w:br", $wr);
+
+		if($brQuery->length > 0) {
+			foreach($brQuery as $br)
+			{
+				$text .= "<br>";
+			}
+		}
+
 		$parsedWR = array(
 				'bold' => $bold,
 				'italic' => $italic,
