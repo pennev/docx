@@ -127,7 +127,7 @@ class Node {
 			$hyperlink = '';
 			foreach ($hyperNode->childNodes as $cn){
 				if ($cn->nodeName == 'w:r')
-					$hyperlink = $cn->nodeValue;
+					$hyperlink .= $cn->nodeValue;
 			}
 
 			// get relid
