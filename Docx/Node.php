@@ -160,6 +160,15 @@ class Node {
 
 		if ($text != '' && $wr->tagName != 'w:hyperlink') $text = htmlEntitiesEncode($text);
 
+		$endNoteQuery = $this->xPath->query("w:footnoteReference", $wr);
+
+		if ($endNoteQuery->length > 0) {
+			foreach($endNoteQuery as $endNote) {
+				/** @var \DOMElement $endNote */
+				$text = '['.$endNote->attributes->item(0)->nodeValue.']'.$text;
+			}
+		}
+
 		$brQuery = $this->xPath->query("w:br", $wr);
 
 		if($brQuery->length > 0) {
