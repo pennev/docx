@@ -165,7 +165,7 @@ class Node {
 		if ($endNoteQuery->length > 0) {
 			foreach($endNoteQuery as $endNote) {
 				/** @var \DOMElement $endNote */
-				$text = '['.$endNote->attributes->item(0)->nodeValue.']'.$text;
+				$text = ' ['.$endNote->attributes->item(0)->nodeValue.']'.$text;
 			}
 		}
 
