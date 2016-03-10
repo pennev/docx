@@ -70,11 +70,11 @@ class Docx {
 
 				# Place the image assets into an array for future reference
 				$imageAssets[$imageName] = array(
-						'h' => 'auto',
-						'w' => 'auto',
-						'title' => $imageName,
-						'id' => null,
-						'data' => base64_encode(zip_entry_read($zipEntry, zip_entry_filesize($zipEntry))));
+					'h' => 'auto',
+					'w' => 'auto',
+					'title' => $imageName,
+					'id' => null,
+					'data' => base64_encode(zip_entry_read($zipEntry, zip_entry_filesize($zipEntry))));
 			}
 
 			# Get the image relationship xml structure
@@ -84,6 +84,9 @@ class Docx {
 			# Get the document structure
 			if ($entryName == 'word/document.xml')
 				$this->xml['structure'] = zip_entry_read($zipEntry, zip_entry_filesize($zipEntry));
+
+			if ($entryName == 'word/footnotes.xml')
+				$this->xml['footnotes'] = zip_entry_read($zipEntry, zip_entry_filesize($zipEntry));
 
 			zip_entry_close($zipEntry);
 		}
@@ -159,6 +162,40 @@ class Docx {
 				case 'w:txbxContent':
 				case 'w:tbl':
 					$nodeParse = new \Docx\Node($node, $this);
+					break;
+			}
+		}
+
+		$this->parseFootNodes();
+
+		return $this;
+	}
+
+	public function parseFootNodes()
+	{
+		if (empty($this->xml['footnotes'])) {
+			return $this;
+		}
+
+		$dom = new \DOMDocument();$dom->loadXML($this->xml['footnotes'], LIBXML_NOENT | LIBXML_XINCLUDE | LIBXML_NOERROR | LIBXML_NOWARNING);
+		$dom->encoding = 'utf-8';
+		$elements = $dom->getElementsByTagName('*');
+
+		# Set up xPath for improved dom navigating
+		$xPath = new \DOMXPath($dom);
+		$xPath->registerNamespace('mc', "http://schemas.openxmlformats.org/markup-compatibility/2006");
+		$xPath->registerNamespace('wp', "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing");
+		$xPath->registerNamespace('w', "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
+		$xPath->registerNamespace('a', "http://schemas.openxmlformats.org/drawingml/2006/main");
+		$xPath->registerNamespace('pic', "http://schemas.openxmlformats.org/drawingml/2006/picture");
+		$xPath->registerNamespace('v', "urn:schemas-microsoft-com:vml");
+		$this->xPath = $xPath;
+
+		foreach ($elements as $node) {
+			# Use a switch here to decide what nodes to actually parse
+			switch ($node->nodeName){
+				case 'w:footnote':
+					$nodeParse = new \Docx\Node($node, $this, true);
 					break;
 			}
 		}
@@ -308,6 +345,7 @@ class Docx {
 
 					break;
 				case 'w:drawing':
+					break;
 					$imageInfo = explode(".", $node->img['name']);
 					$html .=  '<img width="' . $node->img['w'] . '" height="' . $node->img['h'] . '" title="' . $imageInfo[0] . '" src="data:image/' . $imageInfo[1] . ';base64,' . $node->img['data'] . '" alt="" />';
 					break;
@@ -316,6 +354,20 @@ class Docx {
 					break;
 				case 'w:txbxContent':
 
+					break;
+				case 'w:footnote':
+					foreach ($node->run as $ii => $runArr){
+
+						$runPrepend = '';
+						$runAppend = '';
+
+						if ($runArr['bold']){ $runPrepend = '<b>' . $runPrepend; $runAppend .= '</b>';}
+						if ($runArr['underline']){ $runPrepend = '<u>' . $runPrepend; $runAppend .= '</u>';}
+						if ($runArr['italic']){ $runPrepend = '<i>' . $runPrepend; $runAppend .= '</i>';}
+						if ($runArr['tab'] == true) $runArr['text'] = '<span class="tab"></span>' . $runArr['text'];
+
+						$html .= $runPrepend . $runArr['text'] . $runAppend;
+					}
 					break;
 			}
 			$node->htmlProcess = $html;

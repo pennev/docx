@@ -179,11 +179,11 @@ class Node {
 		}
 
 		$parsedWR = array(
-				'bold' => $bold,
-				'italic' => $italic,
-				'tab' => $tab,
-				'underline' => $underline,
-				'text' => $text
+			'bold' => $bold,
+			'italic' => $italic,
+			'tab' => $tab,
+			'underline' => $underline,
+			'text' => $text
 		);
 
 		return $parsedWR;
@@ -253,6 +253,25 @@ class Node {
 				$this->_tableId = $this->id;
 				$this->createTableGrid($this->dom);
 				break;
+			case 'w:footnote':
+				$id = intval($this->dom->getAttribute("w:id"));
+				if ($id < 1) {
+					return;
+				}
+				$idDone = false;
+				$textQuery = $this->xPath->query("w:p", $this->dom);
+				$realnode = null;
+				foreach ($textQuery as $textRes){
+					$this->run[] = array(
+						'bold' => false,
+						'italic' => false,
+						'tab' => false,
+						'underline' => false,
+						'text' => (!$idDone) ? '['.$id.']'.$textRes->nodeValue.'<br/>' : $textRes->nodeValue
+					);
+					$idDone = true;
+				}
+				break;
 		}
 
 	}
@@ -319,9 +338,9 @@ class Node {
 				if (!isset($tableArr[$i])) $tableArr[$i] = array();
 
 				$tableArr[$i][$ii] = array(
-						'dom' => $cellDom,
-						'verticalMerge' => $cellVerticalMerge,
-						'colSpan' => $colSpan
+					'dom' => $cellDom,
+					'verticalMerge' => $cellVerticalMerge,
+					'colSpan' => $colSpan
 				);
 
 			}
@@ -546,11 +565,11 @@ class Node {
 
 			# Collate the image into the parsed array
 			return array(
-					'type' => 'image',
-					'name' => $imageData[0]['title'],
-					'h' => $h,
-					'w' => $w,
-					'data' => $imageData[0]['data']
+				'type' => 'image',
+				'name' => $imageData[0]['title'],
+				'h' => $h,
+				'w' => $w,
+				'data' => $imageData[0]['data']
 			);
 		}
 	}
