@@ -300,7 +300,7 @@ class Docx {
 
 								$classStr = ' wordstyle="' . $node->wordStyle . '"';
 
-								$elementPrepend .= '<unsupported-style '. $classStr .'>';
+								$elementPrepend .= '<unsupported-style '. str_replace(' ', '', $classStr) .'>';
 								$elementAppend .= '</unsupported-style>';
 							}
 						}
