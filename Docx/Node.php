@@ -196,7 +196,7 @@ class Node {
 	 */
 	public function parseNode($isDirect = false){
 
-		$wordStyle = $this->findStyle($this->dom);
+		$wordStyle = str_replace(' ', '', $this->findStyle($this->dom));
 		$styleInfo = Style::getStyleObject($wordStyle, $this->docx);
 		$this->wordStyle = $wordStyle;
 
