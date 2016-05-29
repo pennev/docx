@@ -518,7 +518,7 @@ class Node {
 
 		# Get the prev. element to load the alterateContent block
 		$prevElement = $this->dom->parentNode->previousSibling;
-		if (!isset($prevElement->nodeName)) continue;
+		if (!isset($prevElement->nodeName)) {}//continue;
 
 		# Load the alt Content for the dimensions
 		$mcDimensionXPath = $this->xPath->query("mc:AlternateContent/mc:Fallback/w:pict/v:rect", $prevElement);
