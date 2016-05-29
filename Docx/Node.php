@@ -201,12 +201,18 @@ class Node {
 		$this->wordStyle = $wordStyle;
 
 		# Only proceed for nodes that are children of the w:body tag OR this method was called within a container
-		if ($this->dom->parentNode->nodeName != 'w:body' && !$isDirect)
+			if (!($this->dom->parentNode->nodeName == 'w:r' && $this->dom->nodeName == 'w:drawing')) {
+				if ($this->dom->parentNode->nodeName != 'w:body' && !$isDirect) {
 			return;
+				}
 
-		if (!$isDirect) $this->_tableId = null;
+			}
 
-		switch ($this->dom->nodeName){
+			if (!$isDirect) {
+				$this->_tableId = null;
+			}
+
+			switch ($this->dom->nodeName) {
 			case 'w:p':
 				$isListItem = false;
 				$listLevel = 0;

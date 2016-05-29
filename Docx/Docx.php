@@ -345,7 +345,6 @@ class Docx {
 
 					break;
 				case 'w:drawing':
-					break;
 					$imageInfo = explode(".", $node->img['name']);
 					$html .=  '<img width="' . $node->img['w'] . '" height="' . $node->img['h'] . '" title="' . $imageInfo[0] . '" src="data:image/' . $imageInfo[1] . ';base64,' . $node->img['data'] . '" alt="" />';
 					break;
