@@ -113,7 +113,21 @@ class Docx {
 			}
 			$this->images = $imageAssets;
 		}
+                
 
+               // $im = new imagick( 'a.jpg' );
+
+                // var_dump(gd_info());
+                // echo phpinfo();
+                // $html = "";
+                // foreach($this->images as $val){
+                //     $html .=  '<img width="' . $val['w'] . '" height="' .$val['h'] . '" title="' . $val['title'] . '" src="data:image/' . 'wmf' . ';base64,' . $val['data'] . '" alt="" />';
+					
+               
+                // }
+                // echo $html;
+                // exit;
+                // var_dump($this->images);exit;
 		// Same for relations
 		if (isset($this->xml['image'])){
 			$dom = new \DOMDocument();
@@ -345,7 +359,6 @@ class Docx {
 
 					break;
 				case 'w:drawing':
-					break;
 					$imageInfo = explode(".", $node->img['name']);
 					$html .=  '<img width="' . $node->img['w'] . '" height="' . $node->img['h'] . '" title="' . $imageInfo[0] . '" src="data:image/' . $imageInfo[1] . ';base64,' . $node->img['data'] . '" alt="" />';
 					break;
