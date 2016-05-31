@@ -1,5 +1,5 @@
 <?php
-	namespace Docx;
+	namespace DocxOld;
 
 	include_once  __DIR__.'/../functions.php';
 		class Style {
@@ -48,7 +48,7 @@
 				}
 			}
 			
-			public static function getStyleObject($wordStyleName, $docx){
+			public static function DocxOldgetStyleObject($wordStyleName, $docx){
 				if (isset($docx->styles[$wordStyleName])) return $docx->styles[$wordStyleName]; else return null;
 			}
 		}

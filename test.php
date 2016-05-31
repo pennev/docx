@@ -1,9 +1,6 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+require 'vendor/autoload.php';
+$file = new \Docx\File(__DIR__.'/convertTest.docx');
 
-use Docx\Style;
-
-$style = new Style("test");
-
-die(var_dump($style));
+?>

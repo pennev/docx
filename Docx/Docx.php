@@ -1,5 +1,5 @@
 <?php
-namespace Docx;
+namespace DocxOld;
 
 include_once __DIR__.'/../functions.php';
 class Docx {
