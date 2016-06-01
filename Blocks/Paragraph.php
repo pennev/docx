@@ -18,12 +18,24 @@ class Paragraph implements BlockInterface
     private $document;
     private $styleName = '';
     private $runs = array();
+    private $list = false;
+    private $listLevel = 0;
 
     public function __construct(Document $document, \SimpleXMLElement $element)
     {
         $this->document = $document;
-        $this->styleName = (string)$element->children('w', true)->pPr
-            ->children('w', true)->pStyle->attributes('w', true)->val;
+        $properties = $element->children('w', true)->pPr;
+        $this->styleName = (string)$properties->children('w', true)->pStyle->attributes('w', true)->val;
+        $numProperties = $properties->children('w', true)->numPr;
+
+        if ($numProperties) {
+            $this->list = (isset($numProperties->children('w', true)->ilvl)
+                && isset($numProperties->children('w', true)->ilvl->attributes('w', true)->val));
+        }
+
+        if ($this->list) {
+            $this->listLevel = (int)$numProperties->children('w', true)->ilvl->attributes('w', true)->val;
+        }
 
         foreach ($element->xpath('w:r|w:hyperlink') as $run) {
             switch ($run->getName()) {
@@ -37,8 +49,19 @@ class Paragraph implements BlockInterface
         }
     }
 
+    public function isList()
+    {
+        return $this->list;
+    }
+
+    public function getListLevel()
+    {
+        return $this->listLevel;
+    }
+
     public function render($renderInlineStyles)
     {
+        $defaultTag = ($this->list ? 'li' : 'p');
         $format = '%s';
 
         if (!empty($this->styleName)) {
@@ -48,7 +71,11 @@ class Paragraph implements BlockInterface
 
                 $format = '<%s';
 
-                $args = array($style->getTag());
+                if ($this->list) {
+                    $args = array('li');
+                } else {
+                    $args = array($style->getTag());
+                }
 
                 if (!empty($style->getClass())) {
                     $format .= ' class="%s"';
@@ -66,17 +93,17 @@ class Paragraph implements BlockInterface
 
                 $format = vsprintf($format, $args);
             } else {
-                $format = '<p data-wordstyle="'.$this->styleName.'">%s</p>';
+                $format = '<'.$defaultTag.' data-wordstyle="'.$this->styleName.'">%s</'.$defaultTag.'>';
             }
         } else {
-            $format = '<p>%s</p>';
+            $format = '<'.$defaultTag.'>%s</'.$defaultTag.'>';
         }
 
         $return = '';
         foreach ($this->runs as $run) {
             $return .= $run->render();
         }
-
+        
         return sprintf($format, $return);
     }
 

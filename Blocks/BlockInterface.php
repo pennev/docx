@@ -15,4 +15,6 @@ interface BlockInterface
     public function __construct(Document $document, \SimpleXMLElement $element);
     public function getDocument();
     public function render($renderInlineStyles);
+    public function isList();
+    public function getListLevel();
 }
