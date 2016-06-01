@@ -60,7 +60,7 @@ class Table implements BlockInterface
      */
     public function render($renderInlineStyles)
     {
-        $format = '<table border="1">%s</table>';
+        $format = '<table>%s</table>';
         $text = '';
 
         foreach ($this->rows as $index => $row) {
