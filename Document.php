@@ -14,6 +14,7 @@ class Document
     private $file;
     private $xml;
     private $childs = array();
+    public $renderInlineStyles = false;
 
     public function __construct(File $file, $xmlString)
     {
@@ -35,7 +36,7 @@ class Document
     {
         $return = '';
         foreach ($this->childs as $child) {
-            $return .= $child->render();
+            $return .= $child->render($this->renderInlineStyles);
         }
         
         return $return;

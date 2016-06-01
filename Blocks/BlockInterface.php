@@ -14,5 +14,5 @@ interface BlockInterface
 {
     public function __construct(Document $document, \SimpleXMLElement $element);
     public function getDocument();
-    public function render();
+    public function render($renderInlineStyles);
 }
