@@ -13,7 +13,7 @@ use Docx\Document;
 class TableColumn implements BlockInterface
 {
     private $document;
-    private $paragraphs = array();
+    private $blocks = array();
     private $colSpan = 0;
     private $rowSpan = 0;
     private $vMerge = false;
@@ -38,8 +38,15 @@ class TableColumn implements BlockInterface
             $this->vMergeRestart = ($properties->children('w', true)->vMerge->attributes('w', true)->val == 'restart');
         }
 
-        foreach ($element->children('w', true)->p as $paragraph) {
-            $this->paragraphs[] = new Paragraph($this->document, $paragraph);
+        foreach ($element->children('w', true) as $item) {
+            switch ($item->getName()) {
+                case 'p':
+                    $this->blocks[] = new Paragraph($this->document, $item);
+                    break;
+                case 'tbl':
+                    $this->blocks[] = new Table($this->document, $item);
+                    break;
+            }
         }
     }
 
@@ -103,7 +110,7 @@ class TableColumn implements BlockInterface
         $format .= '>%s</td>';
 
         $runs = '';
-        foreach ($this->paragraphs as $paragraph) {
+        foreach ($this->blocks as $paragraph) {
             $runs .= $paragraph->render($renderInlineStyles);
         }
         $args[] = $runs;

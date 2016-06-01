@@ -25,16 +25,22 @@ class Paragraph implements BlockInterface
     {
         $this->document = $document;
         $properties = $element->children('w', true)->pPr;
-        $this->styleName = (string)$properties->children('w', true)->pStyle->attributes('w', true)->val;
-        $numProperties = $properties->children('w', true)->numPr;
 
-        if ($numProperties) {
-            $this->list = (isset($numProperties->children('w', true)->ilvl)
-                && isset($numProperties->children('w', true)->ilvl->attributes('w', true)->val));
-        }
+        if ($properties) {
+            if ($properties->children('w', true)->pStyle) {
+                $this->styleName = (string)$properties->children('w', true)->pStyle->attributes('w', true)->val;
+            }
 
-        if ($this->list) {
-            $this->listLevel = (int)$numProperties->children('w', true)->ilvl->attributes('w', true)->val;
+            $numProperties = $properties->children('w', true)->numPr;
+
+            if ($numProperties) {
+                $this->list = (isset($numProperties->children('w', true)->ilvl)
+                    && isset($numProperties->children('w', true)->ilvl->attributes('w', true)->val));
+            }
+
+            if ($this->list) {
+                $this->listLevel = (int)$numProperties->children('w', true)->ilvl->attributes('w', true)->val;
+            }
         }
 
         foreach ($element->xpath('w:r|w:hyperlink') as $run) {
@@ -103,7 +109,7 @@ class Paragraph implements BlockInterface
         foreach ($this->runs as $run) {
             $return .= $run->render();
         }
-        
+
         return sprintf($format, $return);
     }
 
