@@ -10,7 +10,6 @@ namespace Docx;
 
 interface StyleInterface
 {
-    public function __construct($styleName, $tag, $class = '', array $inlineStyles = array());
     public function getTag();
     public function getClass();
     public function getStyleName();
