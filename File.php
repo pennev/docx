@@ -14,9 +14,13 @@ class File
     public $document;
     public $styles = array();
     public $relations = array();
+    public $images = array();
+    public $tmpDir;
 
     public function __construct($filename, $disableExternalEntities = true)
     {
+        $this->tmpDir = __DIR__.'/tmp/';
+        $doc = null;
         libxml_disable_entity_loader($disableExternalEntities) ;
         $this->filename = $filename;
 
@@ -36,16 +40,23 @@ class File
                 }
             }
 
-            // TODO: load styles
-
             # Get the document structure
             if ($entryName == 'word/document.xml') {
-                $this->document = new Document($this, zip_entry_read($zipEntry, zip_entry_filesize($zipEntry)));
+                $doc = zip_entry_read($zipEntry, zip_entry_filesize($zipEntry));
+            }
+
+            if (strpos($entryName, 'word/media/') !== false) {
+                $mediaName = str_replace('word/', '', $entryName);
+                $type = pathinfo($mediaName, PATHINFO_EXTENSION);
+
+                $imageData = zip_entry_read($zipEntry, zip_entry_filesize($zipEntry));
+                $this->images[$mediaName] = 'data:image/'.$type.';base64,'.base64_encode($imageData);
             }
 
             zip_entry_close($zipEntry);
         }
         zip_close($zip);
+        $this->document = new Document($this, $doc);
     }
     
     public function addStyle(StyleInterface $style)

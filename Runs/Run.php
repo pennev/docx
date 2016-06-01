@@ -23,12 +23,21 @@ class Run implements RunInterface
     public function __construct(BlockInterface $block, \SimpleXMLElement $element)
     {
         $this->parentBlock = $block;
-        foreach ($element->children('w', true)->t as $textRun) {
-            $this->plainText .= (string)$textRun;
+        $this->parseStyles($element);
+
+        foreach ($element->children('w', true) as $child) {
+            switch ($child->getName()) {
+                case 't':
+                    $this->plainText .= (string)$child;
+                    break;
+                case 'drawing':
+                    $this->plainText .= Image::render($child, $block->getDocument());
+                    break;
+            }
         }
     }
 
-    private function parseStyles()
+    private function parseStyles(\SimpleXMLElement $element)
     {
         $properties = $element->children('w', true)->rPr;
 

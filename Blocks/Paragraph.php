@@ -41,29 +41,33 @@ class Paragraph implements BlockInterface
     {
         $format = '%s';
 
-        if (!empty($this->styleName) && !empty($this->getDocument()->getFile()->styles[$this->styleName])) {
-            /** @var StyleInterface $style */
-            $style = $this->getDocument()->getFile()->styles[$this->styleName];
+        if (!empty($this->styleName)) {
+            if (!empty($this->getDocument()->getFile()->styles[$this->styleName])) {
+                /** @var StyleInterface $style */
+                $style = $this->getDocument()->getFile()->styles[$this->styleName];
 
-            $format = '<%s';
+                $format = '<%s';
 
-            $args = array($style->getTag());
+                $args = array($style->getTag());
 
-            if (!empty($style->getClass())) {
-                $format .= ' class="%s"';
-                $args[] = $style->getClass();
+                if (!empty($style->getClass())) {
+                    $format .= ' class="%s"';
+                    $args[] = $style->getClass();
+                }
+
+                if (!empty($style->renderInlineStyles()) && $renderInlineStyles) {
+                    $format .= ' style="%s"';
+                    $args[] = $style->renderInlineStyles();
+                }
+
+                $format .= '>%s</%s>';
+                $args[] = '%s';
+                $args[] = $style->getTag();
+
+                $format = vsprintf($format, $args);
+            } else {
+                $format = '<p data-wordstyle="'.$this->styleName.'">%s</p>';
             }
-
-            if (!empty($style->renderInlineStyles()) && $renderInlineStyles) {
-                $format .= ' style="%s"';
-                $args[] = $style->renderInlineStyles();
-            }
-
-            $format .= '>%s</%s>';
-            $args[] = '%s';
-            $args[] = $style->getTag();
-
-            $format = vsprintf($format, $args);
         } else {
             $format = '<p>%s</p>';
         }
