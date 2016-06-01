@@ -11,11 +11,13 @@ use Docx\Blocks\Paragraph;
  */
 class Document
 {
+    private $file;
     private $xml;
     private $childs = array();
 
-    public function __construct($xmlString)
+    public function __construct(File $file, $xmlString)
     {
+        $this->file = $file;
         $this->xml = simplexml_load_string($xmlString);
         $this->xml = $this->xml->children('w', true)->body;
 
@@ -23,9 +25,27 @@ class Document
             /** @var \SimpleXMLElement $child */
             switch ($child->getName()) {
                 case 'p':
-                    $this->childs[] = new Paragraph($child);
+                    $this->childs[] = new Paragraph($this, $child);
                     break;
             }
         }
+    }
+
+    public function render()
+    {
+        $return = '';
+        foreach ($this->childs as $child) {
+            $return .= $child->render();
+        }
+        
+        return $return;
+    }
+
+    /**
+     * @return File
+     */
+    public function getFile()
+    {
+        return $this->file;
     }
 }

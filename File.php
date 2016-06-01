@@ -12,7 +12,8 @@ class File
 {
     public $filename = '';
     public $document;
-    public $styles;
+    public $styles = array();
+    public $relations = array();
 
     public function __construct($filename, $disableExternalEntities = true)
     {
@@ -26,15 +27,29 @@ class File
                 continue;
             }
 
+            if ($entryName == 'word/_rels/document.xml.rels') {
+                $relationXml = simplexml_load_string(zip_entry_read($zipEntry, zip_entry_filesize($zipEntry)));
+
+                foreach ($relationXml->Relationship as $relationship) {
+                    $relation = new Relation($relationship);
+                    $this->relations[$relation->getRelId()] = $relation;
+                }
+            }
+
             // TODO: load styles
 
             # Get the document structure
             if ($entryName == 'word/document.xml') {
-                $this->document = new Document(zip_entry_read($zipEntry, zip_entry_filesize($zipEntry)));
+                $this->document = new Document($this, zip_entry_read($zipEntry, zip_entry_filesize($zipEntry)));
             }
 
             zip_entry_close($zipEntry);
         }
         zip_close($zip);
+    }
+    
+    public function addStyle(StyleInterface $style)
+    {
+        $this->styles[$style->getStyleName()] = $style;
     }
 }

@@ -6,10 +6,13 @@
  * Time: 16:14
  */
 
-namespace Docx\Blocks;
+namespace Docx\Runs;
 
-class Run
+use Docx\Blocks\BlockInterface;
+
+class Run implements RunInterface
 {
+    private $parentBlock;
     private $bold = false;
     private $italic = false;
     private $underline = false;
@@ -17,8 +20,9 @@ class Run
     private $format = '%s';
     private $plainText = '';
 
-    public function __construct(\SimpleXMLElement $element)
+    public function __construct(BlockInterface $block, \SimpleXMLElement $element)
     {
+        $this->parentBlock = $block;
         foreach ($element->children('w', true)->t as $textRun) {
             $this->plainText .= (string)$textRun;
         }
