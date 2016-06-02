@@ -3,26 +3,53 @@
  * Created by PhpStorm.
  * User: luciomerotta
  * Date: 01.06.16
- * Time: 13:55
+ * Time: 13:55.
  */
 
 namespace Docx\Blocks;
 
 use Docx\Document;
 
+/**
+ * Created by PhpStorm.
+ * User: lmerotta
+ * Date: 31.05.16
+ * Time: 16:00.
+ */
 class TableColumn implements BlockInterface
 {
+    /**
+     * @var Document
+     */
     private $document;
+
+    /**
+     * @var BlockInterface[]
+     */
     private $blocks = array();
+
+    /**
+     * @var int
+     */
     private $colSpan = 0;
+
+    /**
+     * @var int
+     */
     private $rowSpan = 0;
+
+    /**
+     * @var bool
+     */
     private $vMerge = false;
+
+    /**
+     * @var bool
+     */
     private $vMergeRestart = false;
 
     /**
-     * Table constructor.
-     * @param Document $document
-     * @param \SimpleXMLElement $element
+     * @inheritdoc
      */
     public function __construct(Document $document, \SimpleXMLElement $element)
     {
@@ -30,7 +57,7 @@ class TableColumn implements BlockInterface
         $properties = $element->children('w', true)->tcPr;
 
         if ($properties->children('w', true)->gridSpan) {
-            $this->colSpan = (int)$properties->children('w', true)->gridSpan->attributes('w', true)->val;
+            $this->colSpan = (int) $properties->children('w', true)->gridSpan->attributes('w', true)->val;
         }
 
         if ($properties->children('w', true)->vMerge) {
@@ -51,7 +78,7 @@ class TableColumn implements BlockInterface
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isVMerge()
     {
@@ -59,7 +86,7 @@ class TableColumn implements BlockInterface
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isVMergeRestart()
     {
@@ -68,16 +95,18 @@ class TableColumn implements BlockInterface
 
     /**
      * @param int $rowSpan
+     *
      * @return TableColumn
      */
     public function setRowSpan($rowSpan)
     {
         $this->rowSpan = $rowSpan + 1;
+
         return $this;
     }
 
     /**
-     * @return mixed
+     * @inheritdoc
      */
     public function getDocument()
     {
@@ -85,8 +114,7 @@ class TableColumn implements BlockInterface
     }
 
     /**
-     * @param $renderInlineStyles
-     * @return mixed
+     * @inheritdoc
      */
     public function render($renderInlineStyles)
     {
@@ -119,7 +147,7 @@ class TableColumn implements BlockInterface
     }
 
     /**
-     * @return mixed
+     * @inheritdoc
      */
     public function isList()
     {
@@ -127,11 +155,10 @@ class TableColumn implements BlockInterface
     }
 
     /**
-     * @return mixed
+     * @inheritdoc
      */
     public function getListLevel()
     {
         throw new \BadMethodCallException('should not be called!');
     }
-
 }

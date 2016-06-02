@@ -4,27 +4,50 @@ namespace Docx;
 
 /**
  * Created by PhpStorm.
- * User: luciomerotta
+ * User: lmerotta
  * Date: 31.05.16
- * Time: 15:27
+ * Time: 15:27.
  */
 class File
 {
+    /**
+     * @var string
+     */
     public $filename = '';
-    public $document;
-    public $styles = array();
-    public $relations = array();
-    public $images = array();
-    public $tmpDir;
 
+    /**
+     * @var Document
+     */
+    public $document;
+
+    /**
+     * @var StyleInterface[]
+     */
+    public $styles = array();
+
+    /**
+     * @var Relation[]
+     */
+    public $relations = array();
+
+    /**
+     * @var array
+     */
+    public $images = array();
+
+    /**
+     * File constructor.
+     * @param $filename
+     * @param bool $disableExternalEntities
+     */
     public function __construct($filename, $disableExternalEntities = true)
     {
-        $this->tmpDir = __DIR__.'/tmp/';
-        $doc = null;
-        libxml_disable_entity_loader($disableExternalEntities) ;
-        $this->filename = $filename;
+        libxml_disable_entity_loader($disableExternalEntities);
 
+        $doc = null;
+        $this->filename = $filename;
         $zip = zip_open($this->filename);
+
         while ($zipEntry = zip_read($zip)) {
             $entryName = zip_entry_name($zipEntry);
             if (zip_entry_open($zip, $zipEntry) == false) {
@@ -58,9 +81,15 @@ class File
         zip_close($zip);
         $this->document = new Document($this, $doc);
     }
-    
+
+    /**
+     * @param StyleInterface $style
+     * @return File
+     */
     public function addStyle(StyleInterface $style)
     {
         $this->styles[$style->getStyleName()] = $style;
+
+        return $this;
     }
 }

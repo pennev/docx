@@ -3,13 +3,19 @@
  * Created by PhpStorm.
  * User: luciomerotta
  * Date: 01.06.16
- * Time: 13:55
+ * Time: 13:55.
  */
 
 namespace Docx\Blocks;
 
 use Docx\Document;
 
+/**
+ * Created by PhpStorm.
+ * User: lmerotta
+ * Date: 31.05.16
+ * Time: 16:00.
+ */
 class TableRow implements BlockInterface
 {
     private $document;
@@ -17,7 +23,8 @@ class TableRow implements BlockInterface
 
     /**
      * Table constructor.
-     * @param Document $document
+     *
+     * @param Document          $document
      * @param \SimpleXMLElement $element
      */
     public function __construct(Document $document, \SimpleXMLElement $element)
@@ -39,6 +46,7 @@ class TableRow implements BlockInterface
 
     /**
      * @param $renderInlineStyles
+     *
      * @return mixed
      */
     public function render($renderInlineStyles)
@@ -86,5 +94,4 @@ class TableRow implements BlockInterface
             }
         }
     }
-
 }

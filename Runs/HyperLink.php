@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: luciomerotta
  * Date: 31.05.16
- * Time: 16:14
+ * Time: 16:14.
  */
 
 namespace Docx\Runs;
@@ -11,16 +11,37 @@ namespace Docx\Runs;
 use Docx\Blocks\BlockInterface;
 use Docx\Relation;
 
+/**
+ * Created by PhpStorm.
+ * User: lmerotta
+ * Date: 31.05.16
+ * Time: 16:00.
+ */
 class HyperLink implements RunInterface
 {
+    /**
+     * @var BlockInterface
+     */
     private $parentBlock;
+
     /**
      * @var Relation
      */
     private $relation;
+
+    /**
+     * @var RunInterface
+     */
     private $runs = array();
+
+    /**
+     * @var string
+     */
     private $format = '';
 
+    /**
+     * @inheritdoc
+     */
     public function __construct(BlockInterface $block, \SimpleXMLElement $element)
     {
         $this->parentBlock = $block;
@@ -32,10 +53,13 @@ class HyperLink implements RunInterface
             ->parentBlock
             ->getDocument()
             ->getFile()
-            ->relations[(string)$element->attributes('r', true)->id]
+            ->relations[(string) $element->attributes('r', true)->id]
         ;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function render()
     {
         if ($this->relation->getTargetMode() === 'External') {

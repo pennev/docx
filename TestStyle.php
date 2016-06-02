@@ -3,7 +3,7 @@
  * Created by PhpStorm.
  * User: luciomerotta
  * Date: 01.06.16
- * Time: 09:58
+ * Time: 09:58.
  */
 
 namespace Docx;
@@ -43,7 +43,7 @@ class TestStyle implements StyleInterface
         $return = '';
 
         foreach ($this->inlineStyles as $property => $value) {
-            $return.= $property.': '.$value.';';
+            $return .= $property.': '.$value.';';
         }
 
         return $return;

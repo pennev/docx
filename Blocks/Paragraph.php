@@ -5,22 +5,45 @@ namespace Docx\Blocks;
 use Docx\Document;
 use Docx\Runs\HyperLink;
 use Docx\Runs\Run;
+use Docx\Runs\RunInterface;
 use Docx\StyleInterface;
 
 /**
  * Created by PhpStorm.
  * User: luciomerotta
  * Date: 31.05.16
- * Time: 15:52
+ * Time: 15:52.
  */
 class Paragraph implements BlockInterface
 {
+    /**
+     * @var Document
+     */
     private $document;
+
+    /**
+     * @var string
+     */
     private $styleName = '';
+
+    /**
+     * @var RunInterface[]
+     */
     private $runs = array();
+
+    /**
+     * @var bool
+     */
     private $list = false;
+
+    /**
+     * @var int
+     */
     private $listLevel = 0;
 
+    /**
+     * @inheritdoc
+     */
     public function __construct(Document $document, \SimpleXMLElement $element)
     {
         $this->document = $document;
@@ -28,7 +51,7 @@ class Paragraph implements BlockInterface
 
         if ($properties) {
             if ($properties->children('w', true)->pStyle) {
-                $this->styleName = (string)$properties->children('w', true)->pStyle->attributes('w', true)->val;
+                $this->styleName = (string) $properties->children('w', true)->pStyle->attributes('w', true)->val;
             }
 
             $numProperties = $properties->children('w', true)->numPr;
@@ -39,7 +62,7 @@ class Paragraph implements BlockInterface
             }
 
             if ($this->list) {
-                $this->listLevel = (int)$numProperties->children('w', true)->ilvl->attributes('w', true)->val;
+                $this->listLevel = (int) $numProperties->children('w', true)->ilvl->attributes('w', true)->val;
             }
         }
 
@@ -55,16 +78,25 @@ class Paragraph implements BlockInterface
         }
     }
 
+    /**
+     * @inheritdoc
+     */
     public function isList()
     {
         return $this->list;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getListLevel()
     {
         return $this->listLevel;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function render($renderInlineStyles)
     {
         $defaultTag = ($this->list ? 'li' : 'p');
@@ -114,7 +146,7 @@ class Paragraph implements BlockInterface
     }
 
     /**
-     * @return Document
+     * @inheritdoc
      */
     public function getDocument()
     {

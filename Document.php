@@ -1,22 +1,44 @@
 <?php
 
 namespace Docx;
+
+use Docx\Blocks\BlockInterface;
 use Docx\Blocks\Paragraph;
 use Docx\Blocks\Table;
 
 /**
  * Created by PhpStorm.
- * User: luciomerotta
+ * User: lmerotta
  * Date: 31.05.16
- * Time: 15:27
+ * Time: 15:27.
  */
 class Document
 {
+    /**
+     * @var File
+     */
     private $file;
+
+    /**
+     * @var \SimpleXMLElement[]
+     */
     private $xml;
+
+    /**
+     * @var BlockInterface[]
+     */
     private $childs = array();
+
+    /**
+     * @var bool
+     */
     public $renderInlineStyles = false;
 
+    /**
+     * Document constructor.
+     * @param File $file
+     * @param $xmlString
+     */
     public function __construct(File $file, $xmlString)
     {
         $this->file = $file;
@@ -36,6 +58,9 @@ class Document
         }
     }
 
+    /**
+     * @return string
+     */
     public function render()
     {
         $listStarted = false;
@@ -48,13 +73,11 @@ class Document
             } elseif (!$child->isList() && $listStarted) {
                 $listStarted = false;
 
-
-                for ($listLevel; $listLevel > 0; $listLevel--) {
+                for ($listLevel; $listLevel > 0; --$listLevel) {
                     $return .= '</ul>';
                 }
 
                 $return .= '</ul>';
-
             } elseif ($child->isList() && $child->getListLevel() < $listLevel) {
                 $return .= '</ul>';
                 $listLevel = $child->getListLevel();
@@ -65,7 +88,7 @@ class Document
 
             $return .= $child->render($this->renderInlineStyles);
         }
-        
+
         return $return;
     }
 

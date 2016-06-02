@@ -3,24 +3,43 @@
  * Created by PhpStorm.
  * User: luciomerotta
  * Date: 01.06.16
- * Time: 13:55
+ * Time: 13:55.
  */
 
 namespace Docx\Blocks;
 
 use Docx\Document;
 
+/**
+ * Created by PhpStorm.
+ * User: lmerotta
+ * Date: 31.05.16
+ * Time: 16:00.
+ */
 class Table implements BlockInterface
 {
+    /**
+     * @var Document
+     */
     private $document;
+
+    /**
+     * @var int
+     */
     private $numberOfColumns;
+
+    /**
+     * @var TableRow[]
+     */
     private $rows = array();
+
+    /**
+     * @var int[]
+     */
     private $colSpans = array();
 
     /**
-     * Table constructor.
-     * @param Document $document
-     * @param \SimpleXMLElement $element
+     * @inheritdoc
      */
     public function __construct(Document $document, \SimpleXMLElement $element)
     {
@@ -41,13 +60,13 @@ class Table implements BlockInterface
                     $this->colSpans[$index][$vMergeIndexes] = 0;
                 }
 
-                $this->colSpans[$index][$vMergeIndexes]++;
+                ++$this->colSpans[$index][$vMergeIndexes];
             }
         }
     }
 
     /**
-     * @return mixed
+     * @inheritdoc
      */
     public function getDocument()
     {
@@ -55,8 +74,7 @@ class Table implements BlockInterface
     }
 
     /**
-     * @param $renderInlineStyles
-     * @return mixed
+     * @inheritdoc
      */
     public function render($renderInlineStyles)
     {
@@ -74,7 +92,7 @@ class Table implements BlockInterface
     }
 
     /**
-     * @return mixed
+     * @inheritdoc
      */
     public function isList()
     {
@@ -82,11 +100,10 @@ class Table implements BlockInterface
     }
 
     /**
-     * @return mixed
+     * @inheritdoc
      */
     public function getListLevel()
     {
         throw new \BadMethodCallException('should not be called !');
     }
-
 }
