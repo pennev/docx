@@ -5,8 +5,6 @@
 Open a command console, enter your project directory and execute the
 following command to download the latest stable version of this bundle:
 
-.. code-block:: bash
-
     $ composer require lmerotta/docx >= 0.1
 
 This command requires you to have Composer installed globally, as explained
@@ -15,8 +13,6 @@ in the `installation chapter` of the Composer documentation.
 ## Basic Usage
 
 To convert a .docx file to HTML :
-
-.. code-block:: php
 
     <?php
         use Docx\File;
@@ -31,8 +27,6 @@ This library supports Word Style to HTML conversion. To do so, you simply have t
 First, you need to create a class that implements `Docx\StyleInterface`. For the purpose of this example, let's use the `Docx\TestStyle` provided in this repository.
 
 **Note**: If you are lazy you can use it, too.
-
-.. code-block:: php
 
     <?php
         use Docx\File;
