@@ -33,7 +33,7 @@ If you want to use the **legacy** version, please use the `dev-master branch`. I
 
 ## Documentation
 
-For the install guide and reference, see the [Documentation](/docs/index.md)
+For the install guide and reference, see the [Documentation](/doc/index.md)
 
 ## Contributing
 
