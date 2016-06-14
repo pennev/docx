@@ -81,42 +81,49 @@ class Run implements RunInterface
         $properties = $element->children('w', true)->rPr;
 
         if ($properties) {
-            $this->italic = (isset($properties->children('w', true)->i) ||
-                isset($properties->children('w', true)->iCs));
-
-            $this->bold = (isset($properties->children('w', true)->b) ||
-                isset($properties->children('w', true)->bCs));
-
-            $this->underline = (isset($properties->children('w', true)->u) ||
-                isset($properties->children('w', true)->em));
-
-            $vertAlign = $properties->children('w', true)->vertAlign;
-
-            if ($vertAlign) {
-                switch ((string) $vertAlign->attributes('w', true)->val) {
-                    case 'superscript':
-                        $this->vertAlign = 'sup';
-                        break;
-                    case 'subscript':
-                        $this->vertAlign = 'sub';
-                        break;
-                }
-            }
+            $this->setItalic($properties);
+            $this->setUnderline($properties);
+            $this->setBold($properties);
+            $this->setVertAlign($properties);
         }
+    }
 
-        if ($this->italic) {
+    private function setItalic($properties)
+    {
+        if ((isset($properties->children('w', true)->i) ||
+            isset($properties->children('w', true)->iCs))) {
             $this->format = '<i>'.$this->format.'</i>';
         }
+    }
 
-        if ($this->bold) {
-            $this->format = '<b>'.$this->format.'</b>';
-        }
-
-        if ($this->underline) {
+    private function setUnderline($properties)
+    {
+        if ((isset($properties->children('w', true)->u) ||
+            isset($properties->children('w', true)->em))) {
             $this->format = '<em>'.$this->format.'</em>';
         }
+    }
 
-        if (!empty($this->vertAlign)) {
+    private function setBold($properties)
+    {
+        if ((isset($properties->children('w', true)->b) ||
+            isset($properties->children('w', true)->bCs))) {
+            $this->format = '<b>'.$this->format.'</b>';
+        }
+    }
+
+    private function setVertAlign($properties)
+    {
+        if ($properties->children('w', true)->vertAlign) {
+            switch ((string) $properties->children('w', true)->vertAlign->attributes('w', true)->val) {
+                case 'superscript':
+                    $this->vertAlign = 'sup';
+                    break;
+                case 'subscript':
+                    $this->vertAlign = 'sub';
+                    break;
+            }
+
             $this->format = '<'.$this->vertAlign.'>%s</'.$this->vertAlign.'>';
         }
     }
