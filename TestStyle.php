@@ -43,7 +43,7 @@ class TestStyle implements StyleInterface
 		$return = '';
 
 		foreach ($this->inlineStyles as $property => $value) {
-			$return .= $property.': '.$value.';';
+			$return .= $property . ': ' . $value . ';';
 		}
 
 		return $return;
