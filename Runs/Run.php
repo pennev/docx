@@ -24,21 +24,6 @@ class Run implements RunInterface
     private $parentBlock;
 
     /**
-     * @var bool
-     */
-    private $bold = false;
-
-    /**
-     * @var bool
-     */
-    private $italic = false;
-
-    /**
-     * @var bool
-     */
-    private $underline = false;
-
-    /**
      * @var string
      */
     private $vertAlign = '';
