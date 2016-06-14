@@ -46,16 +46,13 @@ class Table implements BlockInterface
         $this->document = $document;
         $this->numberOfColumns = count($element->children('w', true)->tblGrid->children('w', true)->gridCol);
 
-        foreach ($element->children('w', true)->tr as $row) {
+        foreach ($element->children('w', true)->tr as $index => $row) {
             $this->rows[] = new TableRow($this->getDocument(), $row);
+            $this->colSpans[$index] = array();
         }
 
         foreach ($this->rows as $index => $row) {
             foreach ($row->prepareRowSpans() as $vMergeIndexes) {
-                if (empty($this->colSpans[$index])) {
-                    $this->colSpans[$index] = array();
-                }
-
                 if (empty($this->colSpans[$index][$vMergeIndexes])) {
                     $this->colSpans[$index][$vMergeIndexes] = 0;
                 }

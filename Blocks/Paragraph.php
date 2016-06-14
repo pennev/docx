@@ -71,11 +71,9 @@ class Paragraph implements BlockInterface
             $numProperties = $properties->children('w', true)->numPr;
 
             if ($numProperties) {
-                $this->list = (isset($numProperties->children('w', true)->ilvl)
-                    && isset($numProperties->children('w', true)->ilvl->attributes('w', true)->val));
-
-                $this->listLevel = (isset($numProperties->children('w', true)->ilvl) ?
-                    (int) $numProperties->children('w', true)->ilvl->attributes('w', true)->val : 0);
+                $this->listLevel = (isset($numProperties->children('w', true)->ilvl)
+                    && isset($numProperties->children('w', true)->ilvl->attributes('w', true)->val) ?
+                    (int) $numProperties->children('w', true)->ilvl->attributes('w', true)->val : -1);
 
             }
         }
@@ -86,7 +84,7 @@ class Paragraph implements BlockInterface
      */
     public function isList()
     {
-        return $this->list;
+        return $this->listLevel != -1;
     }
 
     /**
@@ -102,7 +100,7 @@ class Paragraph implements BlockInterface
      */
     public function render($renderInlineStyles)
     {
-        $defaultTag = ($this->list ? 'li' : 'p');
+        $defaultTag = ($this->isList() ? 'li' : 'p');
         $format = '%s';
 
         if (!empty($this->styleName)) {
@@ -112,7 +110,7 @@ class Paragraph implements BlockInterface
 
                 $format = '<%s';
 
-                if ($this->list) {
+                if ($this->isList()) {
                     $args = array('li');
                 } else {
                     $args = array($style->getTag());
