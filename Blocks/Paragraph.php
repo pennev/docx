@@ -134,10 +134,10 @@ class Paragraph implements BlockInterface
 
                 $format = vsprintf($format, $args);
             } else {
-                $format = '<'.$defaultTag.' data-wordstyle="'.$this->styleName.'">%s</'.$defaultTag.'>';
+                $format = '<' . $defaultTag . ' data-wordstyle="' . $this->styleName . '">%s</' . $defaultTag . '>';
             }
         } else {
-            $format = '<'.$defaultTag.'>%s</'.$defaultTag.'>';
+            $format = '<' . $defaultTag . '>%s</' . $defaultTag . '>';
         }
 
         $return = '';

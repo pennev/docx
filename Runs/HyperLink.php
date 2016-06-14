@@ -19,60 +19,60 @@ use Docx\Relation;
  */
 class HyperLink implements RunInterface
 {
-    /**
-     * @var BlockInterface
-     */
-    private $parentBlock;
+	/**
+	 * @var BlockInterface
+	 */
+	private $parentBlock;
 
-    /**
-     * @var Relation
-     */
-    private $relation;
+	/**
+	 * @var Relation
+	 */
+	private $relation;
 
-    /**
-     * @var RunInterface
-     */
-    private $runs = array();
+	/**
+	 * @var RunInterface
+	 */
+	private $runs = array();
 
-    /**
-     * @var string
-     */
-    private $format = '';
+	/**
+	 * @var string
+	 */
+	private $format = '';
 
-    /**
-     * @inheritdoc
-     */
-    public function __construct(BlockInterface $block, \SimpleXMLElement $element)
-    {
-        $this->parentBlock = $block;
-        foreach ($element->xpath('w:r') as $run) {
-            $this->runs[] = new Run($block, $run);
-        }
+	/**
+	 * @inheritdoc
+	 */
+	public function __construct(BlockInterface $block, \SimpleXMLElement $element)
+	{
+		$this->parentBlock = $block;
+		foreach ($element->xpath('w:r') as $run) {
+			$this->runs[] = new Run($block, $run);
+		}
 
-        $this->relation = $this
-            ->parentBlock
-            ->getDocument()
-            ->getFile()
-            ->relations[(string) $element->attributes('r', true)->id]
-        ;
-    }
+		$this->relation = $this
+			->parentBlock
+			->getDocument()
+			->getFile()
+			->relations[(string) $element->attributes('r', true)->id]
+		;
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function render()
-    {
-        if ($this->relation->getTargetMode() === 'External') {
-            $this->format = '<a href="%s" target="_blank">%s</a>';
-        } else {
-            $this->format = '<a href="%s">%s</a>';
-        }
+	/**
+	 * @inheritdoc
+	 */
+	public function render()
+	{
+		if ($this->relation->getTargetMode() === 'External') {
+			$this->format = '<a href="%s" target="_blank">%s</a>';
+		} else {
+			$this->format = '<a href="%s">%s</a>';
+		}
 
-        $toReturn = '';
-        foreach ($this->runs as $run) {
-            $toReturn .= $run->render();
-        }
+		$toReturn = '';
+		foreach ($this->runs as $run) {
+			$toReturn .= $run->render();
+		}
 
-        return sprintf($this->format, $this->relation->getTarget(), $toReturn);
-    }
+		return sprintf($this->format, $this->relation->getTarget(), $toReturn);
+	}
 }

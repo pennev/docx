@@ -17,23 +17,23 @@ namespace Docx;
  */
 interface StyleInterface
 {
-    /**
-     * @return string
-     */
-    public function getTag();
+	/**
+	 * @return string
+	 */
+	public function getTag();
 
-    /**
-     * @return string
-     */
-    public function getClass();
+	/**
+	 * @return string
+	 */
+	public function getClass();
 
-    /**
-     * @return string
-     */
-    public function getStyleName();
+	/**
+	 * @return string
+	 */
+	public function getStyleName();
 
-    /**
-     * @return string
-     */
-    public function renderInlineStyles();
+	/**
+	 * @return string
+	 */
+	public function renderInlineStyles();
 }
