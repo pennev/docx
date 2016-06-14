@@ -73,7 +73,7 @@ class File
 				$type = pathinfo($mediaName, PATHINFO_EXTENSION);
 
 				$imageData = zip_entry_read($zipEntry, zip_entry_filesize($zipEntry));
-				$this->images[$mediaName] = 'data:image/'.$type.';base64,'.base64_encode($imageData);
+				$this->images[$mediaName] = 'data:image/' . $type . ';base64,' . base64_encode($imageData);
 			}
 
 			zip_entry_close($zipEntry);

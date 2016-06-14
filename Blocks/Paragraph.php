@@ -16,143 +16,143 @@ use Docx\StyleInterface;
  */
 class Paragraph implements BlockInterface
 {
-    /**
-     * @var Document
-     */
-    private $document;
+	/**
+	 * @var Document
+	 */
+	private $document;
 
-    /**
-     * @var string
-     */
-    private $styleName = '';
+	/**
+	 * @var string
+	 */
+	private $styleName = '';
 
-    /**
-     * @var RunInterface[]
-     */
-    private $runs = array();
+	/**
+	 * @var RunInterface[]
+	 */
+	private $runs = array();
 
-    /**
-     * @var bool
-     */
-    private $list = false;
+	/**
+	 * @var bool
+	 */
+	private $list = false;
 
-    /**
-     * @var int
-     */
-    private $listLevel = 0;
+	/**
+	 * @var int
+	 */
+	private $listLevel = 0;
 
-    /**
-     * @inheritdoc
-     */
-    public function __construct(Document $document, \SimpleXMLElement $element)
-    {
-        $this->document = $document;
-        $this->determineProperties($element);
+	/**
+	 * @inheritdoc
+	 */
+	public function __construct(Document $document, \SimpleXMLElement $element)
+	{
+		$this->document = $document;
+		$this->determineProperties($element);
 
-        foreach ($element->xpath('w:r|w:hyperlink') as $run) {
-            switch ($run->getName()) {
-                case 'r':
-                    $this->runs[] = new Run($this, $run);
-                    break;
-                case 'hyperlink':
-                    $this->runs[] = new HyperLink($this, $run);
-                    break;
-            }
-        }
-    }
+		foreach ($element->xpath('w:r|w:hyperlink') as $run) {
+			switch ($run->getName()) {
+				case 'r':
+					$this->runs[] = new Run($this, $run);
+					break;
+				case 'hyperlink':
+					$this->runs[] = new HyperLink($this, $run);
+					break;
+			}
+		}
+	}
     
-    private function determineProperties(\SimpleXMLElement $element)
-    {
-        $properties = $element->children('w', true)->pPr;
+	private function determineProperties(\SimpleXMLElement $element)
+	{
+		$properties = $element->children('w', true)->pPr;
 
-        if ($properties) {
-            $this->styleName = Document::getStyle($properties);
+		if ($properties) {
+			$this->styleName = Document::getStyle($properties);
 
-            $numProperties = $properties->children('w', true)->numPr;
+			$numProperties = $properties->children('w', true)->numPr;
 
-            if ($numProperties) {
-                $this->list = (isset($numProperties->children('w', true)->ilvl)
-                    && isset($numProperties->children('w', true)->ilvl->attributes('w', true)->val));
+			if ($numProperties) {
+				$this->list = (isset($numProperties->children('w', true)->ilvl)
+					&& isset($numProperties->children('w', true)->ilvl->attributes('w', true)->val));
 
-                $this->listLevel = (isset($numProperties->children('w', true)->ilvl) ?
-                    (int) $numProperties->children('w', true)->ilvl->attributes('w', true)->val : 0);
+				$this->listLevel = (isset($numProperties->children('w', true)->ilvl) ?
+					(int) $numProperties->children('w', true)->ilvl->attributes('w', true)->val : 0);
 
-            }
-        }
-    }
+			}
+		}
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function isList()
-    {
-        return $this->list;
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function isList()
+	{
+		return $this->list;
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function getListLevel()
-    {
-        return $this->listLevel;
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function getListLevel()
+	{
+		return $this->listLevel;
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function render($renderInlineStyles)
-    {
-        $defaultTag = ($this->list ? 'li' : 'p');
-        $format = '%s';
+	/**
+	 * @inheritdoc
+	 */
+	public function render($renderInlineStyles)
+	{
+		$defaultTag = ($this->list ? 'li' : 'p');
+		$format = '%s';
 
-        if (!empty($this->styleName)) {
-            if (!empty($this->getDocument()->getFile()->styles[$this->styleName])) {
-                /** @var StyleInterface $style */
-                $style = $this->getDocument()->getFile()->styles[$this->styleName];
+		if (!empty($this->styleName)) {
+			if (!empty($this->getDocument()->getFile()->styles[$this->styleName])) {
+				/** @var StyleInterface $style */
+				$style = $this->getDocument()->getFile()->styles[$this->styleName];
 
-                $format = '<%s';
+				$format = '<%s';
 
-                if ($this->list) {
-                    $args = array('li');
-                } else {
-                    $args = array($style->getTag());
-                }
+				if ($this->list) {
+					$args = array('li');
+				} else {
+					$args = array($style->getTag());
+				}
 
-                if (!empty($style->getClass())) {
-                    $format .= ' class="%s"';
-                    $args[] = $style->getClass();
-                }
+				if (!empty($style->getClass())) {
+					$format .= ' class="%s"';
+					$args[] = $style->getClass();
+				}
 
-                if (!empty($style->renderInlineStyles()) && $renderInlineStyles) {
-                    $format .= ' style="%s"';
-                    $args[] = $style->renderInlineStyles();
-                }
+				if (!empty($style->renderInlineStyles()) && $renderInlineStyles) {
+					$format .= ' style="%s"';
+					$args[] = $style->renderInlineStyles();
+				}
 
-                $format .= '>%s</%s>';
-                $args[] = '%s';
-                $args[] = $style->getTag();
+				$format .= '>%s</%s>';
+				$args[] = '%s';
+				$args[] = $style->getTag();
 
-                $format = vsprintf($format, $args);
-            } else {
-                $format = '<' . $defaultTag . ' data-wordstyle="' . $this->styleName . '">%s</' . $defaultTag . '>';
-            }
-        } else {
-            $format = '<' . $defaultTag . '>%s</' . $defaultTag . '>';
-        }
+				$format = vsprintf($format, $args);
+			} else {
+				$format = '<' . $defaultTag . ' data-wordstyle="' . $this->styleName . '">%s</' . $defaultTag . '>';
+			}
+		} else {
+			$format = '<' . $defaultTag . '>%s</' . $defaultTag . '>';
+		}
 
-        $return = '';
-        foreach ($this->runs as $run) {
-            $return .= $run->render();
-        }
+		$return = '';
+		foreach ($this->runs as $run) {
+			$return .= $run->render();
+		}
 
-        return sprintf($format, $return);
-    }
+		return sprintf($format, $return);
+	}
 
-    /**
-     * @inheritdoc
-     */
-    public function getDocument()
-    {
-        return $this->document;
-    }
+	/**
+	 * @inheritdoc
+	 */
+	public function getDocument()
+	{
+		return $this->document;
+	}
 }

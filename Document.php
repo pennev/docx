@@ -95,7 +95,7 @@ class Document
 	public static function getStyle(\SimpleXMLElement $element)
 	{
 		if ($element->children('w', true)->pStyle) {
-			return (string)$element->children('w', true)->pStyle->attributes('w', true)->val;
+			return (string) $element->children('w', true)->pStyle->attributes('w', true)->val;
 		}
 
 		return '';
