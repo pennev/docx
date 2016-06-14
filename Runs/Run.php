@@ -77,7 +77,7 @@ class Run implements RunInterface
     {
         if ((isset($properties->children('w', true)->i) ||
             isset($properties->children('w', true)->iCs))) {
-            $this->format = '<i>'.$this->format.'</i>';
+            $this->format = '<i>' . $this->format . '</i>';
         }
     }
 
@@ -85,7 +85,7 @@ class Run implements RunInterface
     {
         if ((isset($properties->children('w', true)->u) ||
             isset($properties->children('w', true)->em))) {
-            $this->format = '<em>'.$this->format.'</em>';
+            $this->format = '<em>' . $this->format . '</em>';
         }
     }
 
@@ -93,7 +93,7 @@ class Run implements RunInterface
     {
         if ((isset($properties->children('w', true)->b) ||
             isset($properties->children('w', true)->bCs))) {
-            $this->format = '<b>'.$this->format.'</b>';
+            $this->format = '<b>' . $this->format . '</b>';
         }
     }
 
@@ -109,7 +109,7 @@ class Run implements RunInterface
                     break;
             }
 
-            $this->format = '<'.$this->vertAlign.'>%s</'.$this->vertAlign.'>';
+            $this->format = '<' . $this->vertAlign . '>%s</' . $this->vertAlign . '>';
         }
     }
 
