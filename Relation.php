@@ -16,53 +16,53 @@ namespace Docx;
  */
 class Relation
 {
-    /**
-     * @var string
-     */
-    private $relId;
+	/**
+	 * @var string
+	 */
+	private $relId;
 
-    /**
-     * @var string
-     */
-    private $target;
+	/**
+	 * @var string
+	 */
+	private $target;
 
-    /**
-     * @var string
-     */
-    private $targetMode = '';
+	/**
+	 * @var string
+	 */
+	private $targetMode = '';
 
-    /**
-     * Relation constructor.
-     * @param \SimpleXMLElement $element
-     */
-    public function __construct(\SimpleXMLElement $element)
-    {
-        $this->relId = (string) $element->attributes()->Id;
-        $this->target = (string) $element->attributes()->Target;
-        $this->targetMode = (string) $element->attributes()->TargetMode;
-    }
+	/**
+	 * Relation constructor.
+	 * @param \SimpleXMLElement $element
+	 */
+	public function __construct(\SimpleXMLElement $element)
+	{
+		$this->relId = (string) $element->attributes()->Id;
+		$this->target = (string) $element->attributes()->Target;
+		$this->targetMode = (string) $element->attributes()->TargetMode;
+	}
 
-    /**
-     * @return string
-     */
-    public function getRelId()
-    {
-        return $this->relId;
-    }
+	/**
+	 * @return string
+	 */
+	public function getRelId()
+	{
+		return $this->relId;
+	}
 
-    /**
-     * @return string
-     */
-    public function getTarget()
-    {
-        return $this->target;
-    }
+	/**
+	 * @return string
+	 */
+	public function getTarget()
+	{
+		return $this->target;
+	}
 
-    /**
-     * @return string
-     */
-    public function getTargetMode()
-    {
-        return $this->targetMode;
-    }
+	/**
+	 * @return string
+	 */
+	public function getTargetMode()
+	{
+		return $this->targetMode;
+	}
 }

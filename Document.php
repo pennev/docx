@@ -14,98 +14,98 @@ use Docx\Blocks\Table;
  */
 class Document
 {
-    /**
-     * @var File
-     */
-    private $file;
+	/**
+	 * @var File
+	 */
+	private $file;
 
-    /**
-     * @var \SimpleXMLElement[]
-     */
-    private $xml;
+	/**
+	 * @var \SimpleXMLElement[]
+	 */
+	private $xml;
 
-    /**
-     * @var BlockInterface[]
-     */
-    private $childs = array();
+	/**
+	 * @var BlockInterface[]
+	 */
+	private $childs = array();
 
-    /**
-     * @var bool
-     */
-    public $renderInlineStyles = false;
+	/**
+	 * @var bool
+	 */
+	public $renderInlineStyles = false;
 
-    /**
-     * Document constructor.
-     * @param File $file
-     * @param $xmlString
-     */
-    public function __construct(File $file, $xmlString)
-    {
-        $this->file = $file;
-        $this->xml = simplexml_load_string($xmlString);
-        $this->xml = $this->xml->children('w', true)->body;
+	/**
+	 * Document constructor.
+	 * @param File $file
+	 * @param $xmlString
+	 */
+	public function __construct(File $file, $xmlString)
+	{
+		$this->file = $file;
+		$this->xml = simplexml_load_string($xmlString);
+		$this->xml = $this->xml->children('w', true)->body;
 
-        foreach ($this->xml->children('w', true) as $child) {
-            /** @var \SimpleXMLElement $child */
-            switch ($child->getName()) {
-                case 'p':
-                    $this->childs[] = new Paragraph($this, $child);
-                    break;
-                case 'tbl':
-                    $this->childs[] = new Table($this, $child);
-                    break;
-            }
-        }
-    }
+		foreach ($this->xml->children('w', true) as $child) {
+			/** @var \SimpleXMLElement $child */
+			switch ($child->getName()) {
+				case 'p':
+					$this->childs[] = new Paragraph($this, $child);
+					break;
+				case 'tbl':
+					$this->childs[] = new Table($this, $child);
+					break;
+			}
+		}
+	}
 
-    /**
-     * @return string
-     */
-    public function render()
-    {
-        $listStarted = false;
-        $listLevel = 0;
-        $return = '';
-        foreach ($this->childs as $child) {
-            if (($child->isList() && !$listStarted)) {
-                $listStarted = true;
-                $return .= '<ul>';
-            } elseif (!$child->isList() && $listStarted) {
-                $listStarted = false;
+	/**
+	 * @return string
+	 */
+	public function render()
+	{
+		$listStarted = false;
+		$listLevel = 0;
+		$return = '';
+		foreach ($this->childs as $child) {
+			if (($child->isList() && !$listStarted)) {
+				$listStarted = true;
+				$return .= '<ul>';
+			} elseif (!$child->isList() && $listStarted) {
+				$listStarted = false;
 
-                for ($listLevel; $listLevel > 0; --$listLevel) {
-                    $return .= '</ul>';
-                }
+				for ($listLevel; $listLevel > 0; --$listLevel) {
+					$return .= '</ul>';
+				}
 
-                $return .= '</ul>';
-            } elseif ($child->isList() && $child->getListLevel() < $listLevel) {
-                $return .= '</ul>';
-                $listLevel = $child->getListLevel();
-            } elseif ($child->isList() && $child->getListLevel() > $listLevel) {
-                $return .= '<ul>';
-                $listLevel = $child->getListLevel();
-            }
+				$return .= '</ul>';
+			} elseif ($child->isList() && $child->getListLevel() < $listLevel) {
+				$return .= '</ul>';
+				$listLevel = $child->getListLevel();
+			} elseif ($child->isList() && $child->getListLevel() > $listLevel) {
+				$return .= '<ul>';
+				$listLevel = $child->getListLevel();
+			}
 
-            $return .= $child->render($this->renderInlineStyles);
-        }
+			$return .= $child->render($this->renderInlineStyles);
+		}
 
-        return $return;
-    }
+		return $return;
+	}
 
-    public static function getStyle(\SimpleXMLElement $element)
-    {
-        if ($element->children('w', true)->pStyle) {
-            return (string)$element->children('w', true)->pStyle->attributes('w', true)->val;
-        }
+	public static function getStyle(\SimpleXMLElement $element)
+	{
+		if ($element->children('w', true)->pStyle) {
+			return (string) $element->children('w', true)->pStyle->attributes('w', true)->val;
+		}
 
-        return '';
-    }
+		return '';
+	}
 
-    /**
-     * @return File
-     */
-    public function getFile()
-    {
-        return $this->file;
-    }
+	/**
+	 * @return File
+	 */
+	public function getFile()
+	{
+		return $this->file;
+	}
 }

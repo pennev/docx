@@ -20,27 +20,27 @@ use Docx\Relation;
  */
 class Image
 {
-    /**
-     * @param \SimpleXMLElement $element
-     * @param Document $document
-     * @return string
-     */
-    public static function render(\SimpleXMLElement $element, Document $document)
-    {
-        $format = '<img src="%s" />';
+	/**
+	 * @param \SimpleXMLElement $element
+	 * @param Document $document
+	 * @return string
+	 */
+	public static function render(\SimpleXMLElement $element, Document $document)
+	{
+		$format = '<img src="%s" />';
 
-        $imageId = (string) $element
-            ->children('wp', true)->inline
-            ->children('a', true)->graphic
-            ->children('a', true)->graphicData
-            ->children('pic', true)->pic
-            ->children('pic', true)->blipFill
-            ->children('a', true)->blip
-            ->attributes('r', true)->embed;
+		$imageId = (string) $element
+			->children('wp', true)->inline
+			->children('a', true)->graphic
+			->children('a', true)->graphicData
+			->children('pic', true)->pic
+			->children('pic', true)->blipFill
+			->children('a', true)->blip
+			->attributes('r', true)->embed;
 
-        /** @var Relation $relation */
-        $relation = $document->getFile()->relations[$imageId];
+		/** @var Relation $relation */
+		$relation = $document->getFile()->relations[$imageId];
 
-        return sprintf($format, $document->getFile()->images[$relation->getTarget()]);
-    }
+		return sprintf($format, $document->getFile()->images[$relation->getTarget()]);
+	}
 }
