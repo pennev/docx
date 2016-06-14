@@ -47,24 +47,7 @@ class Paragraph implements BlockInterface
     public function __construct(Document $document, \SimpleXMLElement $element)
     {
         $this->document = $document;
-        $properties = $element->children('w', true)->pPr;
-
-        if ($properties) {
-            if ($properties->children('w', true)->pStyle) {
-                $this->styleName = (string) $properties->children('w', true)->pStyle->attributes('w', true)->val;
-            }
-
-            $numProperties = $properties->children('w', true)->numPr;
-
-            if ($numProperties) {
-                $this->list = (isset($numProperties->children('w', true)->ilvl)
-                    && isset($numProperties->children('w', true)->ilvl->attributes('w', true)->val));
-            }
-
-            if ($this->list) {
-                $this->listLevel = (int) $numProperties->children('w', true)->ilvl->attributes('w', true)->val;
-            }
-        }
+        $this->determineProperties($element);
 
         foreach ($element->xpath('w:r|w:hyperlink') as $run) {
             switch ($run->getName()) {
@@ -74,6 +57,26 @@ class Paragraph implements BlockInterface
                 case 'hyperlink':
                     $this->runs[] = new HyperLink($this, $run);
                     break;
+            }
+        }
+    }
+    
+    private function determineProperties(\SimpleXMLElement $element)
+    {
+        $properties = $element->children('w', true)->pPr;
+
+        if ($properties) {
+            $this->styleName = Document::getStyle($properties);
+
+            $numProperties = $properties->children('w', true)->numPr;
+
+            if ($numProperties) {
+                $this->list = (isset($numProperties->children('w', true)->ilvl)
+                    && isset($numProperties->children('w', true)->ilvl->attributes('w', true)->val));
+
+                $this->listLevel = (isset($numProperties->children('w', true)->ilvl) ?
+                    (int) $numProperties->children('w', true)->ilvl->attributes('w', true)->val : 0);
+
             }
         }
     }

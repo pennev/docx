@@ -92,6 +92,15 @@ class Document
         return $return;
     }
 
+    public static function getStyle(\SimpleXMLElement $element)
+    {
+        if ($properties->children('w', true)->pStyle) {
+            return (string)$properties->children('w', true)->pStyle->attributes('w', true)->val;
+        }
+
+        return '';
+    }
+
     /**
      * @return File
      */
