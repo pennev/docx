@@ -16,6 +16,7 @@ If you want to use the **legacy** version, please use the `dev-master branch`. I
 * Complex tables (embedded tables, vertically / horizontally merged cells, complex layouts)
 * Unordered Lists
 * Images
+* Footnotes
 
 #### What is NOT supported
 
@@ -24,7 +25,7 @@ If you want to use the **legacy** version, please use the `dev-master branch`. I
 
 #### What WILL BE supported
 
-* Footnotes
+* Endnotes
 * ...
 
 ## Requirements
