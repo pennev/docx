@@ -18,15 +18,15 @@ use Docx\Blocks\BlockInterface;
  */
 interface RunInterface
 {
-	/**
-	 * RunInterface constructor.
-	 * @param BlockInterface $block
-	 * @param \SimpleXMLElement $element
-	 */
-	public function __construct(BlockInterface $block, \SimpleXMLElement $element);
+    /**
+     * RunInterface constructor.
+     * @param BlockInterface $block
+     * @param \SimpleXMLElement $element
+     */
+    public function __construct(BlockInterface $block, \SimpleXMLElement $element);
 
-	/**
-	 * @return string
-	 */
-	public function render();
+    /**
+     * @return string
+     */
+    public function render();
 }

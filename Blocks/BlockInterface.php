@@ -18,31 +18,31 @@ use Docx\Document;
  */
 interface BlockInterface
 {
-	/**
-	 * BlockInterface constructor.
-	 * @param Document $document
-	 * @param \SimpleXMLElement $element
-	 */
-	public function __construct(Document $document, \SimpleXMLElement $element);
+    /**
+     * BlockInterface constructor.
+     * @param Document $document
+     * @param \SimpleXMLElement $element
+     */
+    public function __construct(Document $document, \SimpleXMLElement $element);
 
-	/**
-	 * @return Document
-	 */
-	public function getDocument();
+    /**
+     * @return Document
+     */
+    public function getDocument();
 
-	/**
-	 * @param $renderInlineStyles
-	 * @return string
-	 */
-	public function render($renderInlineStyles);
+    /**
+     * @param $renderInlineStyles
+     * @return string
+     */
+    public function render($renderInlineStyles);
 
-	/**
-	 * @return bool
-	 */
-	public function isList();
+    /**
+     * @return bool
+     */
+    public function isList();
 
-	/**
-	 * @return int
-	 */
-	public function getListLevel();
+    /**
+     * @return int
+     */
+    public function getListLevel();
 }
