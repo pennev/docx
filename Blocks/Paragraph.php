@@ -39,7 +39,7 @@ class Paragraph implements BlockInterface
     /**
      * @var int
      */
-    private $listLevel = 0;
+    private $listLevel = -1;
 
     /**
      * @inheritdoc
@@ -74,7 +74,6 @@ class Paragraph implements BlockInterface
                 $this->listLevel = (isset($numProperties->children('w', true)->ilvl)
                     && isset($numProperties->children('w', true)->ilvl->attributes('w', true)->val) ?
                     (int) $numProperties->children('w', true)->ilvl->attributes('w', true)->val : -1);
-
             }
         }
     }

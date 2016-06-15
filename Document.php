@@ -89,6 +89,15 @@ class Document
             $return .= $child->render($this->renderInlineStyles);
         }
 
+        // render footnotes
+        foreach ($this->file->footnotes as $footnote) {
+            if ($footnote->isEmpty()) {
+                continue;
+            }
+
+            $return .= sprintf("[%s] %s<br/>", $footnote->getId(), $footnote->render());
+        }
+
         return $return;
     }
 

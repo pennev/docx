@@ -54,6 +54,9 @@ class Run implements RunInterface
                 case 'drawing':
                     $this->plainText .= Image::render($child, $block->getDocument());
                     break;
+                case 'footnoteReference':
+                    $this->plainText .= ' ['.(int)$child->attributes('w', true)->id.'] ';
+                    break;
             }
         }
     }

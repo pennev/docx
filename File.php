@@ -36,6 +36,11 @@ class File
     public $images = array();
 
     /**
+     * @var array
+     */
+    public $footnotes = array();
+
+    /**
      * File constructor.
      * @param $filename
      * @param bool $disableExternalEntities
@@ -45,6 +50,7 @@ class File
         libxml_disable_entity_loader($disableExternalEntities);
 
         $doc = null;
+        $notes = null;
         $this->filename = $filename;
         $zip = zip_open($this->filename);
 
@@ -68,6 +74,10 @@ class File
                 $doc = zip_entry_read($zipEntry, zip_entry_filesize($zipEntry));
             }
 
+            if ($entryName == 'word/footnotes.xml') {
+                $notes = simplexml_load_string(zip_entry_read($zipEntry, zip_entry_filesize($zipEntry)));
+            }
+
             if (strpos($entryName, 'word/media/') !== false) {
                 $mediaName = str_replace('word/', '', $entryName);
                 $type = pathinfo($mediaName, PATHINFO_EXTENSION);
@@ -80,6 +90,13 @@ class File
         }
         zip_close($zip);
         $this->document = new Document($this, $doc);
+
+        if (!is_null($notes)) {
+            foreach ($notes->children('w', true)->footnote as $footnote) {
+                $note = new Footnote($this->document, $footnote);
+                $this->footnotes[$note->getId()] = $note;
+            }
+        }
     }
 
     /**
