@@ -1,5 +1,5 @@
 {
-    "name": "lmerotta/docx",
+    "name": "snieditions/docx",
     "description": "PHP Based Docx Parser, based on original work by PhilGale92/docx",
     "type": "library",
     "license": "MIT",
